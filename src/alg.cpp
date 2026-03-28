@@ -4,15 +4,21 @@
 #include "alg.h"
 
 int countPairs1(int *arr, int len, int value) {
-  int perem = 0;
-  for (int i = 0; i < len; i++) {
-    for (int j = i + 1; j < len; j++) {
-      if (arr[i] + arr[j] == value) {
-        perem++;
-      }
+ int per1 = 0;
+    for (int i = 0; i < len; i++) {
+        for (int j = i + 1; j < len; j++) {
+            if (arr[i] + arr[j] == value) {
+                per1++;
+                while (j + 1 < len && arr[j] == arr[j + 1]) {
+                    j++;
+                }
+            }
+        }
+        while (i + 1 < len && arr[i] == arr[i + 1]) {
+            i++;
+        }
     }
-  }
-  return perem;
+    return per1;
 }
 
 int countPairs2(int *arr, int len, int value) {
