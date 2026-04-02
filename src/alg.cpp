@@ -1,97 +1,106 @@
-// Copyright 2021 NNTU-CS
+// Copyright 2025 NNTU-CS
 
-#include <cstdint>
-#include "alg.h"
-
-int countPairs1(int *arr, int len, int value) {
-  int per1 = 0;
-  for (int i = 0; i < len; i++) {
-    for (int j = i + 1; j < len; j++) {
-      if (arr[i] + arr[j] == value) {
-        per1++;
-      }
+int countPairs1(int* arr, int size, int sum) {
+    int iPerem = 0;
+    for (int i = 0; i < size; i++) {
+        for (int j = i + 1; j < size; j++) {
+            if (arr[i] + arr[j] == sum) {
+                iPerem = iPerem + 1;
+            }
+        }
     }
+    return iPerem;
   }
-  return per1;
+
+int countPairs2(int* arr, int size, int sum) {
+    int left = 0;
+    int right = size - 1;
+    int iPerem = 0;
+    while (left < right) {
+        int curSum = arr[left] + arr[right];
+        if (curSum == sum) {
+            if (arr[left] == arr[right]) {
+                int len = right - left + 1;
+                iPerem = iPerem + len * (len - 1) / 2;
+                break;
+            }
+            int leftVal = arr[left];
+            int rightVal = arr[right];
+            int idx = left;
+            int leftCnt = 0;
+            while (idx <= right && arr[idx] == leftVal) {
+                leftCnt++;
+                idx++;
+            }
+            idx = right;
+            int rightCnt = 0;
+            while (idx >= left && arr[idx] == rightVal) {
+                rightCnt++;
+                idx--;
+            }
+            iPerem = iPerem + leftCnt * rightCnt;
+            left = left + leftCnt;
+            right = right - rightCnt;
+        } else if (curSum < sum) {
+            left++;
+        } else {
+            right--;
+        }
+    }
+    return iPerem;
 }
 
-int countPairs2(int *arr, int len, int value) {
-  int per2 = 0;
-  int left = 0;
-  int right = len - 1;
-  while (left < right) {
-    int sum = arr[left] + arr[right];
-    if (sum == value) {
-      if (arr[left] == arr[right]) {
-        int x = right - left + 1;
-        per2 += x * (x - 1) / 2;
-        break;
-      }
-      int leftPerem = 1;
-      int rightPerem = 1;
-      while (left + leftPerem < right && arr[left] == arr[left + leftCount])
-        leftPerem++;
-      while (right - rightPerem > left && arr[right] == arr[right - rightCount])
-        rightPerem++;
-          per2 += leftPerem * rightPerem;
-      left += leftPerem;
-      right -= rightPerem;
-    } else if (sum < value) {
-      left++;
-    } else {
-      right--;
+int countPairs3(int* arr, int size, int sum) {
+    int iPerem = 0;
+    for (int i = 0; i < size - 1; i++) {
+        if (i > 0 && arr[i] == arr[i - 1]) {
+            continue;
+        }
+        int need = sum - arr[i];
+        if (need < arr[i]) {
+            break;
+        }
+        int low = i + 1;
+        int high = size - 1;
+        int first = -1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] == need) {
+                first = mid;
+                high = mid - 1;
+            } else if (arr[mid] < need) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        if (first == -1) {
+            continue;
+        }
+        low = first;
+        high = size - 1;
+        int last = first;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] == need) {
+                last = mid;
+                low = mid + 1;
+            } else if (arr[mid] < need) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        if (arr[i] == need) {
+            int len = last - i + 1;
+            iPerem = iPerem + len * (len - 1) / 2;
+            break;
+        }
+        int leftCnt = 1;
+        while (i + leftCnt < size && arr[i + leftCnt] == arr[i]) {
+            leftCnt++;
+        }
+        iPerem = iPerem + leftCnt * (last - first + 1);
     }
-  }
-  return per2;
-}
-
-int countPairs3(int *arr, int len, int value) {
-  int per3 = 0;
-  for (int i = 0; i < len; i++) {
-    if (i > 0 && arr[i] == arr[i - 1])
-      continue;
-    int tar = value - arr[i];
-    if (tar < arr[i])
-      break;
-    int lows = -1;
-    int highs = -1;
-    int left = i + 1;
-    int right = len - 1;
-    while (left <= right) {
-      int mid = left + (right - left) / 2;
-      if (arr[mid] == tar) {
-        lows = mid;
-        right = mid - 1;
-      } else if (arr[mid] < tar) {
-        left = mid + 1;
-      } else {
-        right = mid - 1;
-      }
-    }
-    if (lows == -1)
-      continue;
-    left = lows;
-    right = len - 1;
-    while (left <= right) {
-      int mid = left + (right - left) / 2;
-      if (arr[mid] == tar) {
-        hig = mid;
-        left = mid + 1;
-      } else if (arr[mid] < target) {
-        left = mid + 1;
-      } else {
-        right = mid - 1;
-      }
-    }
-    if (arr[i] == tar) {
-        int n = hi - i + 1;
-      per3 += n * (n - 1) / 2;
-      break;
-      }
-    int leftPerem = 1;
-    while (i + leftPerem < len && arr[i + leftPerem] == arr[i])
-      leftPerem++;
-    per3 += leftPerem * (hi - lo + 1);
-  }
-  return per3;
+    return iPerem;
 }
